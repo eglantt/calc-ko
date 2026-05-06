@@ -16,7 +16,7 @@
             --text: #2d3436;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; justify-content: center; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; justify-content: center; color: var(--text); }
 
         .app-container {
             width: 100%;
@@ -24,7 +24,7 @@
             background: var(--app-bg);
             min-height: 100vh;
             position: relative;
-            padding-bottom: 170px; 
+            padding-bottom: 180px; 
         }
 
         .sticky-header {
@@ -56,28 +56,28 @@
         .section { display: none; padding: 15px; }
         .section.active { display: block; }
 
-        .ref-image { width: 100%; border-radius: 6px; margin-bottom: 10px; border: 1px solid #ddd; background: #eee; min-height: 150px; object-fit: cover; }
+        .ref-image { width: 100%; border-radius: 6px; margin-bottom: 10px; border: 1px solid #ddd; background: #eee; min-height: 120px; object-fit: cover; }
 
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; background: #fff; }
         .info-table th, .info-table td { border: 1px solid #ddd; padding: 5px; text-align: left; }
         .info-table th { background: #eee; }
 
-        .item-card { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #e1e4e8; }
+        .item-card { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #e1e4e8; overflow: hidden; }
         .item-header { display: block; margin-bottom: 10px; }
         .item-name { font-weight: bold; font-size: 14px; display: block; }
         .item-sub-info { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
         .item-weight-calc { color: var(--accent); font-weight: bold; font-size: 13px; float: right; }
 
         .controls { display: flex; align-items: center; gap: 8px; clear: both; padding-top: 5px; }
-        .btn-math { width: 45px; height: 45px; border: none; border-radius: 8px; background: #f1f2f6; font-size: 20px; font-weight: bold; cursor: pointer; }
-        .num-input { flex: 1; height: 45px; text-align: center; font-size: 18px; font-weight: bold; border: 2px solid #f1f2f6; border-radius: 8px; }
+        .btn-math { width: 45px; height: 45px; border: none; border-radius: 8px; background: #f1f2f6; font-size: 20px; font-weight: bold; cursor: pointer; color: var(--primary); }
+        .num-input { flex: 1; height: 45px; text-align: center; font-size: 18px; font-weight: bold; border: 2px solid #f1f2f6; border-radius: 8px; background: #fff; color: #000; }
 
         .quick-adds { display: flex; gap: 5px; margin-top: 8px; }
-        .btn-quick { flex: 1; padding: 8px; border: none; background: #dfe6e9; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        .btn-quick { flex: 1; padding: 10px; border: none; background: #dfe6e9; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--primary); cursor: pointer; }
 
         .staff-card { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #dcdde1; }
         .staff-card h4 { margin: 0 0 10px 0; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 5px; color: #7f8c8d; }
-        .grid-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 8px; }
+        .grid-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 8px; display: block; }
 
         .footer-totals { 
             position: fixed; 
@@ -105,7 +105,7 @@
         .log-details { font-size: 12px; white-space: pre-line; background: #f9f9f9; padding: 8px; margin: 10px 0; border: 1px solid #eee; border-radius: 4px; }
         
         .action-row { display: flex; gap: 5px; flex-wrap: wrap; }
-        .action-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; color: white; font-weight: bold; font-size: 11px; cursor: pointer; min-width: 80px; }
+        .action-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; color: white; font-weight: bold; font-size: 11px; cursor: pointer; min-width: 80px; text-align: center; }
         .btn-del-single { background: #95a5a6; }
 
         .admin-btn { padding: 15px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 8px; color: white; }
@@ -144,11 +144,21 @@
         <div class="staff-card">
             <h4>ВЫДАЛ</h4>
             <input type="text" id="s_fio" class="grid-input" placeholder="ФИО">
-            <select id="s_pos" class="grid-input"><option value="">Должность...</option><option value="Кипер">Кипер</option><option value="Зоотехник">Зоотехник</option><option value="Руководитель отдела">Руководитель отдела</option></select>
+            <select id="s_pos" class="grid-input">
+                <option value="">Должность...</option>
+                <option value="Кипер">Кипер</option>
+                <option value="Зоотехник">Зоотехник</option>
+                <option value="Руководитель отдела">Руководитель отдела</option>
+            </select>
             <input type="text" id="s_dep" class="grid-input" placeholder="Отдел">
             <h4>ПРИНЯЛ</h4>
             <input type="text" id="r_fio" class="grid-input" placeholder="ФИО">
-            <select id="r_pos" class="grid-input"><option value="">Должность...</option><option value="Кипер">Кипер</option><option value="Зоотехник">Зоотехник</option><option value="Руководитель отдела">Руководитель отдела</option></select>
+            <select id="r_pos" class="grid-input">
+                <option value="">Должность...</option>
+                <option value="Кипер">Кипер</option>
+                <option value="Зоотехник">Зоотехник</option>
+                <option value="Руководитель отдела">Руководитель отдела</option>
+            </select>
             <input type="text" id="r_dep" class="grid-input" placeholder="Отдел">
         </div>
         <div id="log-container"></div>
@@ -171,8 +181,6 @@
 
 <script>
     const DB_KEY = 'zoo_feed_calc_db_v1';
-    const OLD_KEYS = ['v_db_v108', 'v_db_v109', 'v_db_v110', 'v_db_v111', 'v_db_v112', 'v_db_v113', 'v_db_v114', 'v_db_v115', 'v_db_v116', 'v_db_v117', 'v_db_v118'];
-
     const RATS = [
         {n:1, t:"Голыш", w:5.5, l:"≈ 3"}, {n:2, t:"Опушенок", w:14.5, l:"4-5"}, {n:3, t:"Бегунок (мол.)", w:25.5, l:"6-8"},
         {n:4, t:"Бегунок (подр.)", w:38, l:"9-11"}, {n:5, t:"Крупный бегунок", w:62.5, l:"12-14"}, {n:6, t:"Подросток (сред.)", w:114.5, l:"15-17"},
@@ -186,39 +194,61 @@
     let state = {};
 
     function init() {
-        if (!localStorage.getItem(DB_KEY)) {
-            for (let k of OLD_KEYS) { if (localStorage.getItem(k)) { localStorage.setItem(DB_KEY, localStorage.getItem(k)); break; } }
-        }
         ['s_fio', 's_pos', 's_dep', 'r_fio', 'r_pos', 'r_dep'].forEach(id => {
-            if (localStorage.getItem('v_save_'+id)) document.getElementById(id).value = localStorage.getItem('v_save_'+id);
-            document.getElementById(id).onchange = (e) => localStorage.setItem('v_save_'+id, e.target.value);
+            const saved = localStorage.getItem('v_save_' + id);
+            if (saved) document.getElementById(id).value = saved;
+            document.getElementById(id).onchange = (e) => localStorage.setItem('v_save_' + id, e.target.value);
         });
-        const buildInfo = (d, id) => {
-            let h = '<tr><th>№</th><th>Тип</th><th>Вес (гр)</th><th>L (см)</th></tr>';
-            d.forEach(i => h += `<tr><td>${i.n}</td><td>${i.t}</td><td>≈ ${i.w}</td><td>${i.l}</td></tr>`);
-            document.getElementById(id).innerHTML = h;
+
+        const buildTable = (data, targetId) => {
+            let html = '<tr><th>№</th><th>Тип</th><th>Вес (гр)</th><th>L (см)</th></tr>';
+            data.forEach(i => html += `<tr><td>${i.n}</td><td>${i.t}</td><td>≈ ${i.w}</td><td>${i.l}</td></tr>`);
+            document.getElementById(targetId).innerHTML = html;
         };
-        const buildList = (d, c, p) => {
-            const el = document.getElementById(c);
-            d.forEach(i => {
-                state[p+i.n] = 0;
+
+        const renderList = (data, containerId, prefix) => {
+            const container = document.getElementById(containerId);
+            data.forEach(i => {
+                state[prefix + i.n] = 0;
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                card.innerHTML = `<div class="item-header"><span class="item-weight-calc" id="wc-${p}${i.n}">≈ 0 гр</span><span class="item-name">№${i.n} ${i.t}</span><span class="item-sub-info">≈ ${i.w}г | ${i.l} см</span></div>
-                    <div class="controls"><button class="btn-math" onclick="step('${p}',${i.n},-1)">-</button><input type="number" class="num-input" id="in-${p}${i.n}" value="0" oninput="inputVal('${p}',${i.n},this.value)"><button class="btn-math" onclick="step('${p}',${i.n},1)">+</button></div>
+                card.innerHTML = `
+                    <div class="item-header">
+                        <span class="item-weight-calc" id="wc-${prefix}${i.n}">≈ 0 гр</span>
+                        <span class="item-name">№${i.n} ${i.t}</span>
+                        <span class="item-sub-info">≈ ${i.w}г | ${i.l} см</span>
+                    </div>
+                    <div class="controls">
+                        <button class="btn-math" onclick="step('${prefix}',${i.n},-1)">-</button>
+                        <input type="number" class="num-input" id="in-${prefix}${i.n}" value="0" oninput="inputVal('${prefix}',${i.n},this.value)">
+                        <button class="btn-math" onclick="step('${prefix}',${i.n},1)">+</button>
+                    </div>
                     <div class="quick-adds">
-                        <button class="btn-quick" onclick="step('${p}',${i.n},-10)">-10</button>
-                        <button class="btn-quick" onclick="step('${p}',${i.n},10)">+10</button>
+                        <button class="btn-quick" onclick="step('${prefix}',${i.n},-10)">-10</button>
+                        <button class="btn-quick" onclick="step('${prefix}',${i.n},10)">+10</button>
                     </div>`;
-                el.appendChild(card);
+                container.appendChild(card);
             });
         };
-        buildInfo(RATS, 'info-rats'); buildInfo(MICE, 'info-mice'); buildList(RATS, 'list-rats', 'r'); buildList(MICE, 'list-mice', 'm');
-        updateTotals(); updateJournalUI();
+
+        buildTable(RATS, 'info-rats');
+        buildTable(MICE, 'info-mice');
+        renderList(RATS, 'list-rats', 'r');
+        renderList(MICE, 'list-mice', 'm');
+        updateTotals();
+        updateJournalUI();
     }
 
-    function step(p, n, d) { state[p+n] = Math.max(0, (state[p+n] || 0) + d); sync(p, n); }
-    function inputVal(p, n, v) { state[p+n] = Math.max(0, parseInt(v) || 0); sync(p, n); }
+    function step(p, n, d) {
+        state[p + n] = Math.max(0, (state[p + n] || 0) + d);
+        sync(p, n);
+    }
+
+    function inputVal(p, n, v) {
+        state[p + n] = Math.max(0, parseInt(v) || 0);
+        sync(p, n);
+    }
+
     function sync(p, n) {
         const item = (p === 'r' ? RATS : MICE).find(i => i.n === n);
         document.getElementById(`in-${p}${n}`).value = state[p+n];
@@ -230,8 +260,10 @@
         let cr = 0, wr = 0, cm = 0, wm = 0;
         RATS.forEach(i => { cr += (state['r'+i.n]||0); wr += (state['r'+i.n]||0) * i.w; });
         MICE.forEach(i => { cm += (state['m'+i.n]||0); wm += (state['m'+i.n]||0) * i.w; });
-        document.getElementById('sum-count-r').innerText = cr; document.getElementById('sum-weight-r').innerText = (wr/1000).toFixed(2);
-        document.getElementById('sum-count-m').innerText = cm; document.getElementById('sum-weight-m').innerText = (wm/1000).toFixed(2);
+        document.getElementById('sum-count-r').innerText = cr;
+        document.getElementById('sum-weight-r').innerText = (wr/1000).toFixed(2);
+        document.getElementById('sum-count-m').innerText = cm;
+        document.getElementById('sum-weight-m').innerText = (wm/1000).toFixed(2);
     }
 
     function setTab(t) {
@@ -244,29 +276,61 @@
     function getNowFilename() {
         const d = new Date();
         const pad = (n) => n.toString().padStart(2, '0');
-        return `Лист_учета_КО_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}_${pad(d.getDate())}${pad(d.getMonth()+1)}${d.getFullYear().toString().slice(-2)}`;
+        const time = `${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+        const date = `${pad(d.getDate())}${pad(d.getMonth()+1)}${d.getFullYear().toString().slice(-2)}`;
+        return `Лист_учета_КО_${time}_${date}`;
     }
 
     function saveToLog() {
         const sF = document.getElementById('s_fio').value, rF = document.getElementById('r_fio').value;
         if (!sF || !rF) return alert("Заполните ФИО!");
+        
         const rD = RATS.filter(i => state['r'+i.n]>0).map(i => ({ t: `Крыса №${i.n} ${i.t}`, q: state['r'+i.n], w: (state['r'+i.n]*i.w/1000).toFixed(3) }));
         const mD = MICE.filter(i => state['m'+i.n]>0).map(i => ({ t: `Мышь №${i.n} ${i.t}`, q: state['m'+i.n], w: (state['m'+i.n]*i.w/1000).toFixed(3) }));
+        
         if (!rD.length && !mD.length) return alert("Пусто!");
-        const d = new Date();
-        const e = { id: d.getTime(), date: d.toLocaleString('ru-RU'), s_i: `${sF}, ${document.getElementById('s_pos').value}`, r_i: `${rF}, ${document.getElementById('r_pos').value}`, rats: rD, mice: mD, tQr: rD.reduce((a,b)=>a+b.q,0), tWr: rD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2), tQm: mD.reduce((a,b)=>a+b.q,0), tWm: mD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2) };
-        let log = JSON.parse(localStorage.getItem(DB_KEY) || '[]'); log.unshift(e); localStorage.setItem(DB_KEY, JSON.stringify(log));
-        [...RATS, ...MICE].forEach((i, x) => { const p = x < RATS.length ? 'r' : 'm'; state[p+i.n] = 0; sync(p, i.n); });
-        updateJournalUI(); alert("Сохранено!");
+
+        const e = {
+            id: Date.now(),
+            date: new Date().toLocaleString('ru-RU'),
+            s_i: `${sF}, ${document.getElementById('s_pos').value}`,
+            r_i: `${rF}, ${document.getElementById('r_pos').value}`,
+            rats: rD,
+            mice: mD,
+            tQr: rD.reduce((a,b)=>a+b.q,0),
+            tWr: rD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2),
+            tQm: mD.reduce((a,b)=>a+b.q,0),
+            tWm: mD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2)
+        };
+
+        let log = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+        log.unshift(e);
+        localStorage.setItem(DB_KEY, JSON.stringify(log));
+
+        [...RATS, ...MICE].forEach((i, idx) => {
+            const p = idx < RATS.length ? 'r' : 'm';
+            state[p+i.n] = 0;
+            sync(p, i.n);
+        });
+        updateJournalUI();
+        alert("Сохранено!");
     }
 
     function updateJournalUI() {
-        const c = document.getElementById('log-container'); const log = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-        c.innerHTML = log.length ? '' : '<p style="text-align:center;color:#999;padding:20px;">Пусто</p>';
+        const c = document.getElementById('log-container');
+        const log = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+        c.innerHTML = log.length ? '' : '<p style="text-align:center;color:#999;padding:20px;">Журнал пуст</p>';
+        
         log.forEach(e => {
-            const d = document.createElement('div'); d.className = 'log-item';
-            d.innerHTML = `<div class="log-meta">${e.date}</div><div class="log-staff"><b>Выдал:</b> ${e.s_i}<br><b>Принял:</b> ${e.r_i}</div>
-                <div class="log-details">${e.rats.length?`<b>КРЫСЫ:</b>\n${e.rats.map(i=>i.t+': '+i.q+' шт').join('\n')}\nИтого: ${e.tQr} шт / ${e.tWr} кг\n`:''}${e.mice.length?`<b>МЫШИ:</b>\n${e.mice.map(i=>i.t+': '+i.q+' шт').join('\n')}\nИтого: ${e.tQm} шт / ${e.tWm} кг`:''}</div>
+            const d = document.createElement('div');
+            d.className = 'log-item';
+            d.innerHTML = `
+                <div class="log-meta">${e.date}</div>
+                <div class="log-staff"><b>Выдал:</b> ${e.s_i}<br><b>Принял:</b> ${e.r_i}</div>
+                <div class="log-details">
+                    ${e.rats.length ? `<b>КРЫСЫ:</b>\n${e.rats.map(i=>i.t+': '+i.q+' шт').join('\n')}\nИтого: ${e.tQr} шт / ${e.tWr} кг\n` : ''}
+                    ${e.mice.length ? `<b>МЫШИ:</b>\n${e.mice.map(i=>i.t+': '+i.q+' шт').join('\n')}\nИтого: ${e.tQm} шт / ${e.tWm} кг` : ''}
+                </div>
                 <div class="action-row">
                     <button class="action-btn" style="background:#2c3e50;" onclick="generateHTML(${e.id})">ОТЧЕТ HTML</button>
                     <button class="action-btn" style="background:#546e7a;" onclick="generateTXT(${e.id})">TXT</button>
@@ -279,15 +343,70 @@
     function generateHTML(id) {
         const e = JSON.parse(localStorage.getItem(DB_KEY)).find(x => x.id === id);
         const fname = getNowFilename();
-        let h = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>${fname}</title><style>body{font-family:serif;padding:30px;color:#000;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #000;padding:8px;text-align:left;}h2,h3{text-align:center;text-transform:uppercase;}.meta{margin-bottom:20px;line-height:1.6;}.footer{margin-top:50px;display:flex;justify-content:space-between;font-weight:bold;}@media print{.no-print{display:none;}}</style></head><body>
-            <button class="no-print" onclick="window.print()" style="padding:10px 20px;margin-bottom:20px;cursor:pointer;">ПЕЧАТЬ В PDF</button>
+        let h = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${fname}</title><style>body{font-family:serif;padding:30px;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #000;padding:8px;text-align:left;}h2,h3{text-align:center;}@media print{.no-p{display:none;}}</style></head><body>
+            <button class="no-p" onclick="window.print()">ПЕЧАТЬ</button>
             <h2>Лист учёта выдачи живых кормов</h2>
-            <div class="meta"><b>Дата создания:</b> ${e.date}<br><b>Выдал:</b> ${e.s_i}<br><b>Принял:</b> ${e.r_i}</div>`;
-        if(e.rats.length){ h+=`<h3>КРЫСЫ</h3><table><tr><th>Категория</th><th>Кол-во (шт)</th><th>Вес (кг)</th></tr>${e.rats.map(i=>`<tr><td>${i.t}</td><td>${i.q}</td><td>${i.w}</td></tr>`).join('')}<tr><td><b>ИТОГО КРЫС:</b></td><td><b>${e.tQr}</b></td><td><b>${e.tWr}</b></td></tr></table>`; }
-        if(e.mice.length){ h+=`<h3>МЫШИ</h3><table><tr><th>Тип</th><th>Кол-во (шт)</th><th>Вес (кг)</th></tr>${e.mice.map(i=>`<tr><td>${i.t}</td><td>${i.q}</td><td>${i.w}</td></tr>`).join('')}<tr><td><b>ИТОГО МЫШЕЙ:</b></td><td><b>${e.tQm}</b></td><td><b>${e.tWm}</b></td></tr></table>`; }
-        h+=`<div class="footer"><div>Выдал: _________________</div><div>Принял: _________________</div></div></body></html>`;
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([h],{type:'text/html'})); a.download = `${fname}.html`; a.click();
+            <p><b>Дата:</b> ${e.date}<br><b>Выдал:</b> ${e.s_i}<br><b>Принял:</b> ${e.r_i}</p>`;
+        if(e.rats.length) h += `<h3>КРЫСЫ</h3><table><tr><th>Тип</th><th>Кол-во</th><th>Вес (кг)</th></tr>${e.rats.map(i=>`<tr><td>${i.t}</td><td>${i.q}</td><td>${i.w}</td></tr>`).join('')}<tr><td><b>ИТОГО</b></td><td><b>${e.tQr}</b></td><td><b>${e.tWr}</b></td></tr></table>`;
+        if(e.mice.length) h += `<h3>МЫШИ</h3><table><tr><th>Тип</th><th>Кол-во</th><th>Вес (кг)</th></tr>${e.mice.map(i=>`<tr><td>${i.t}</td><td>${i.q}</td><td>${i.w}</td></tr>`).join('')}<tr><td><b>ИТОГО</b></td><td><b>${e.tQm}</b></td><td><b>${e.tWm}</b></td></tr></table>`;
+        h += `<br><br>Выдал: _________ Принял: _________</body></html>`;
+        const blob = new Blob([h], {type: 'text/html'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname + '.html'; a.click();
     }
 
     function generateTXT(id) {
-        const e = JSON.parse(localStorage.getItem(DB_KEY
+        const e = JSON.parse(localStorage.getItem(DB_KEY)).find(x => x.id === id);
+        const fname = getNowFilename();
+        let t = `ОТЧЕТ ВЫДАЧИ КО\nДата: ${e.date}\nВыдал: ${e.s_i}\nПринял: ${e.r_i}\n\n`;
+        if(e.rats.length) t += `КРЫСЫ:\n` + e.rats.map(i=>`${i.t}: ${i.q} шт`).join('\n') + `\nВсего крыс: ${e.tQr} шт / ${e.tWr} кг\n\n`;
+        if(e.mice.length) t += `МЫШИ:\n` + e.mice.map(i=>`${i.t}: ${i.q} шт`).join('\n') + `\nВсего мышей: ${e.tQm} шт / ${e.tWm} кг`;
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], {type: 'text/plain'})); a.download = fname + '.txt'; a.click();
+    }
+
+    function deleteEntry(id) {
+        if(confirm("Удалить запись?")) {
+            let log = JSON.parse(localStorage.getItem(DB_KEY));
+            localStorage.setItem(DB_KEY, JSON.stringify(log.filter(x => x.id !== id)));
+            updateJournalUI();
+        }
+    }
+
+    function exportJson() {
+        const d = localStorage.getItem(DB_KEY);
+        if(!d) return alert("База пуста");
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([d], {type: 'application/json'}));
+        a.download = `backup_${Date.now()}.json`;
+        a.click();
+    }
+
+    function importJson(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                localStorage.setItem(DB_KEY, JSON.stringify(data));
+                updateJournalUI();
+                alert("Данные успешно импортированы!");
+            } catch(ex) { alert("Ошибка файла!"); }
+        };
+        reader.readAsText(input.files[0]);
+    }
+
+    function clearLog() {
+        if(confirm("УДАЛИТЬ ВСЕ ЗАПИСИ?") && prompt("Введите УДАЛИТЬ") === "УДАЛИТЬ") {
+            localStorage.removeItem(DB_KEY);
+            updateJournalUI();
+        }
+    }
+
+    init();
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+        });
+    }
+</script>
+</body>
+</html>
