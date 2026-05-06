@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Калькулятор кормовых объектов v 1.1.8</title>
+    <title>Калькулятор кормовых объектов v 1.1.9</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c3e50">
     <style>
@@ -119,7 +119,7 @@
     <div class="sticky-header">
         <div class="app-header">
             <h1>Калькулятор кормовых объектов</h1>
-            <span>v 1.1.8</span>
+            <span>v 1.1.9</span>
         </div>
         <div class="tabs">
             <button id="tab-rats" class="tab-btn active" onclick="setTab('rats')">КРЫСЫ</button>
@@ -171,7 +171,7 @@
 
 <script>
     const DB_KEY = 'zoo_feed_calc_db_v1';
-    const OLD_KEYS = ['v_db_v108', 'v_db_v109', 'v_db_v110', 'v_db_v111', 'v_db_v112', 'v_db_v113', 'v_db_v114', 'v_db_v115', 'v_db_v116', 'v_db_v117'];
+    const OLD_KEYS = ['v_db_v108', 'v_db_v109', 'v_db_v110', 'v_db_v111', 'v_db_v112', 'v_db_v113', 'v_db_v114', 'v_db_v115', 'v_db_v116', 'v_db_v117', 'v_db_v118'];
 
     const RATS = [
         {n:1, t:"Голыш", w:5.5, l:"≈ 3"}, {n:2, t:"Опушенок", w:14.5, l:"4-5"}, {n:3, t:"Бегунок (мол.)", w:25.5, l:"6-8"},
@@ -206,7 +206,10 @@
                 card.className = 'item-card';
                 card.innerHTML = `<div class="item-header"><span class="item-weight-calc" id="wc-${p}${i.n}">≈ 0 гр</span><span class="item-name">№${i.n} ${i.t}</span><span class="item-sub-info">≈ ${i.w}г | ${i.l} см</span></div>
                     <div class="controls"><button class="btn-math" onclick="step('${p}',${i.n},-1)">-</button><input type="number" class="num-input" id="in-${p}${i.n}" value="0" oninput="inputVal('${p}',${i.n},this.value)"><button class="btn-math" onclick="step('${p}',${i.n},1)">+</button></div>
-                    <div class="quick-adds"><button class="btn-quick" onclick="step('${p}',${i.n},10)">+10</button><button class="btn-quick" onclick="step('${p}',${i.n},50)">+50</button></div>`;
+                    <div class="quick-adds">
+                        <button class="btn-quick" onclick="step('${p}',${i.n},-10)">-10</button>
+                        <button class="btn-quick" onclick="step('${p}',${i.n},10)">+10</button>
+                    </div>`;
                 el.appendChild(card);
             });
         };
@@ -287,27 +290,4 @@
     }
 
     function generateTXT(id) {
-        const e = JSON.parse(localStorage.getItem(DB_KEY)).find(x => x.id === id);
-        const fname = getNowFilename();
-        let t = `ЛИСТ УЧЕТА ВЫДАЧИ ЖИВЫХ КОРМОВ\n==================================\nДата: ${e.date}\nВыдал: ${e.s_i}\nПринял: ${e.r_i}\n----------------------------------\n`;
-        if(e.rats.length) { t += `КРЫСЫ:\n` + e.rats.map(i => `${i.t}: ${i.q} шт. (≈ ${i.w} кг)`).join('\n') + `\nИтого: ${e.tQr} шт. / ${e.tWr} кг\n----------------------------------\n`; }
-        if(e.mice.length) { t += `МЫШИ:\n` + e.mice.map(i => `${i.t}: ${i.q} шт. (≈ ${i.w} кг)`).join('\n') + `\nИтого: ${e.tQm} шт. / ${e.tWm} кг\n----------------------------------\n`; }
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t],{type:'text/plain'})); a.download = `${fname}.txt`; a.click();
-    }
-
-    function deleteEntry(id) { if(confirm("Удалить?")) { let l = JSON.parse(localStorage.getItem(DB_KEY)||'[]'); localStorage.setItem(DB_KEY, JSON.stringify(l.filter(x=>x.id!==id))); updateJournalUI(); } }
-    function exportJson() { const d = localStorage.getItem(DB_KEY); if(!d) return; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download=`backup_${Date.now()}.json`; a.click(); }
-    function importJson(i) { const r = new FileReader(); r.onload=(e)=>{ localStorage.setItem(DB_KEY, JSON.stringify(JSON.parse(e.target.result))); updateJournalUI(); }; r.readAsText(i.files[0]); }
-    function clearLog() { if(confirm("Удалить всё?") && prompt("УДАЛИТЬ")==="УДАЛИТЬ") { localStorage.removeItem(DB_KEY); updateJournalUI(); } }
-
-    init();
-
-    // РЕГИСТРАЦИЯ SERVICE WORKER ДЛЯ PWA
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
-        });
-    }
-</script>
-</body>
-</html>
+        const e = JSON.parse(localStorage.getItem(DB_KEY
