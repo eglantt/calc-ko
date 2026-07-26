@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Калькулятор кормовых объектов v 1.2.1</title>
+    <title>Калькулятор кормовых объектов v 1.2.2</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c3e50">
     <style>
@@ -148,7 +148,7 @@
     <div class="sticky-header">
         <div class="app-header">
             <h1>Калькулятор кормовых объектов</h1>
-            <span>v 1.2.1</span>
+            <span>v 1.2.2</span>
         </div>
         <div class="tabs">
             <button id="tab-rats" class="tab-btn active" onclick="setTab('rats')">КРЫСЫ</button>
@@ -200,6 +200,7 @@
 
 <script>
     const DB_KEY = 'zoo_feed_calc_db_v1';
+    const DRAFT_KEY = 'zoo_feed_calc_draft_v1'; // черновик несохранённых count'ов (до нажатия "Внести в журнал")
     // ВОЗВРАЩЕН СПИСОК КЛЮЧЕЙ ДЛЯ ВОССТАНОВЛЕНИЯ БАЗЫ
     const OLD_KEYS = ['v_db_v108', 'v_db_v109', 'v_db_v110', 'v_db_v111', 'v_db_v112', 'v_db_v113', 'v_db_v114', 'v_db_v115', 'v_db_v116', 'v_db_v117', 'v_db_v118', 'v_db_v119', 'v_db_v120'];
 
@@ -248,11 +249,39 @@
 
         buildTable(RATS, 'info-rats'); buildTable(MICE, 'info-mice');
         renderList(RATS, 'list-rats', 'r'); renderList(MICE, 'list-mice', 'm');
+
+        loadDraft();
+        RATS.forEach(i => sync('r', i.n));
+        MICE.forEach(i => sync('m', i.n));
+
         updateTotals(); updateJournalUI();
     }
 
-    function step(p, n, d) { state[p + n] = Math.max(0, (state[p + n] || 0) + d); sync(p, n); }
-    function inputVal(p, n, v) { state[p + n] = Math.max(0, parseInt(v) || 0); sync(p, n); }
+    // Восстановление несохранённых значений (черновика), если приложение было
+    // свёрнуто/выгружено ОС до нажатия "Внести в журнал"
+    function loadDraft() {
+        try {
+            const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+            if (draft && typeof draft === 'object') {
+                Object.keys(draft).forEach(k => {
+                    if (Object.prototype.hasOwnProperty.call(state, k)) {
+                        state[k] = Math.max(0, parseInt(draft[k]) || 0);
+                    }
+                });
+            }
+        } catch (e) { /* повреждённый черновик — игнорируем */ }
+    }
+
+    function saveDraft() {
+        try { localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); } catch (e) { /* хранилище недоступно */ }
+    }
+
+    function clearDraft() {
+        localStorage.removeItem(DRAFT_KEY);
+    }
+
+    function step(p, n, d) { state[p + n] = Math.max(0, (state[p + n] || 0) + d); sync(p, n); saveDraft(); }
+    function inputVal(p, n, v) { state[p + n] = Math.max(0, parseInt(v) || 0); sync(p, n); saveDraft(); }
     function sync(p, n) {
         const item = (p === 'r' ? RATS : MICE).find(i => i.n === n);
         document.getElementById(`in-${p}${n}`).value = state[p+n];
@@ -290,6 +319,7 @@
         const e = { id: Date.now(), date: new Date().toLocaleString('ru-RU'), s_i: `${sF}, ${document.getElementById('s_pos').value}`, r_i: `${rF}, ${document.getElementById('r_pos').value}`, rats: rD, mice: mD, tQr: rD.reduce((a,b)=>a+b.q,0), tWr: rD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2), tQm: mD.reduce((a,b)=>a+b.q,0), tWm: mD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2) };
         let log = JSON.parse(localStorage.getItem(DB_KEY) || '[]'); log.unshift(e); localStorage.setItem(DB_KEY, JSON.stringify(log));
         [...RATS, ...MICE].forEach((i, idx) => { const p = idx < RATS.length ? 'r' : 'm'; state[p+i.n] = 0; sync(p, i.n); });
+        clearDraft();
         updateJournalUI(); alert("Сохранено!");
     }
 
