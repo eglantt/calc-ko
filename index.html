@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Калькулятор кормовых объектов v 1.2.2</title>
+    <title>Калькулятор кормовых объектов v 1.2.3</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c3e50">
     <style>
@@ -148,7 +148,7 @@
     <div class="sticky-header">
         <div class="app-header">
             <h1>Калькулятор кормовых объектов</h1>
-            <span>v 1.2.2</span>
+            <span>v 1.2.3</span>
         </div>
         <div class="tabs">
             <button id="tab-rats" class="tab-btn active" onclick="setTab('rats')">КРЫСЫ</button>
@@ -223,9 +223,15 @@
         }
 
         ['s_fio', 's_pos', 's_dep', 'r_fio', 'r_pos', 'r_dep'].forEach(id => {
+            const el = document.getElementById(id);
             const saved = localStorage.getItem('v_save_' + id);
-            if (saved) document.getElementById(id).value = saved;
-            document.getElementById(id).onchange = (e) => localStorage.setItem('v_save_' + id, e.target.value);
+            if (saved) el.value = saved;
+            const persist = (e) => localStorage.setItem('v_save_' + id, e.target.value);
+            if (el.tagName === 'SELECT') {
+                el.onchange = persist; // выбор опции — уже мгновенное событие, onchange надёжен
+            } else {
+                el.oninput = persist; // сохраняем по каждому нажатию, не дожидаясь потери фокуса
+            }
         });
 
         const buildTable = (data, targetId) => {
@@ -354,7 +360,31 @@
 
     function deleteEntry(id) { if(confirm("Удалить запись?")) { let log = JSON.parse(localStorage.getItem(DB_KEY)); localStorage.setItem(DB_KEY, JSON.stringify(log.filter(x => x.id !== id))); updateJournalUI(); } }
     function exportJson() { const d = localStorage.getItem(DB_KEY); if(!d) return alert("База пуста"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download = `backup_${Date.now()}.json`; a.click(); }
-    function importJson(input) { const reader = new FileReader(); reader.onload = (e) => { try { localStorage.setItem(DB_KEY, JSON.stringify(JSON.parse(e.target.result))); updateJournalUI(); alert("Успех!"); } catch(ex) { alert("Ошибка!"); } }; reader.readAsText(input.files[0]); }
+    function importJson(input) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            let incoming;
+            try {
+                incoming = JSON.parse(e.target.result);
+                if (!Array.isArray(incoming)) throw new Error('not an array');
+            } catch (ex) {
+                alert("Ошибка! Файл повреждён или имеет неверный формат.");
+                input.value = '';
+                return;
+            }
+            const current = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            const sure = confirm(
+                `Текущий журнал (${current.length} записей) будет полностью заменён содержимым файла (${incoming.length} записей).\n\nЭто действие необратимо. Продолжить?`
+            );
+            input.value = ''; // сброс, чтобы повторный выбор того же файла снова вызвал onchange
+            if (!sure) return;
+            localStorage.setItem(DB_KEY, JSON.stringify(incoming));
+            updateJournalUI();
+            alert("Успех!");
+        };
+        reader.readAsText(file);
+    }
     function clearLog() { if(confirm("УДАЛИТЬ ВСЕ ЗАПИСИ?") && prompt("Введите УДАЛИТЬ") === "УДАЛИТЬ") { localStorage.removeItem(DB_KEY); updateJournalUI(); } }
 
     init();
