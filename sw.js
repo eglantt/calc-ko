@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zoo-calc-paused'; // временная приостановка работы, было v1.2.3 (zoo-calc-v3)
+const CACHE_NAME = 'zoo-calc-paused-2'; // добавлен жест разблокировки (21 тап по версии), было zoo-calc-paused
 const ASSETS = [
   'index.html',
   'manifest.json',

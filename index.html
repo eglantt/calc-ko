@@ -160,7 +160,7 @@
     <div class="sticky-header">
         <div class="app-header">
             <h1>Калькулятор кормовых объектов</h1>
-            <span>v 1.2.3</span>
+            <span id="v-tap" onclick="onVersionTap()">v 1.2.3</span>
         </div>
         <div id="pause-banner" style="display:none; background:#c0392b; color:#fff; text-align:center; font-weight:bold; padding:10px 14px; font-size:14px;">
             ⚠ ПРИЛОЖЕНИЕ ВРЕМЕННО ПРИОСТАНОВЛЕНО<br>
@@ -220,6 +220,29 @@
     // журнал доступен только для просмотра. Данные в localStorage не затрагиваются.
     const APP_PAUSED = true;
     const PAUSE_MSG = "Приложение временно приостановлено. Внесение и изменение данных недоступно.";
+
+    // Временная разблокировка жестом (21 тап по номеру версии в шапке, пауза между тапами < 2с).
+    // Живёт только в памяти текущей открытой страницы — при перезапуске/выгрузке приложения
+    // сбрасывается сама собой, APP_PAUSED при этом не меняется.
+    let unlocked = false;
+    let tapCount = 0;
+    let lastTapTime = 0;
+    const TAP_TARGET = 21;
+    const TAP_MAX_GAP_MS = 2000;
+
+    function onVersionTap() {
+        if (!APP_PAUSED || unlocked) return; // жест имеет смысл только пока приложение на паузе
+        const now = Date.now();
+        if (now - lastTapTime > TAP_MAX_GAP_MS) tapCount = 0;
+        lastTapTime = now;
+        tapCount++;
+        if (tapCount >= TAP_TARGET) {
+            unlocked = true;
+            tapCount = 0;
+            document.body.classList.remove('app-paused');
+            document.getElementById('pause-banner').style.display = 'none';
+        }
+    }
 
     const DB_KEY = 'zoo_feed_calc_db_v1';
     const DRAFT_KEY = 'zoo_feed_calc_draft_v1'; // черновик несохранённых count'ов (до нажатия "Внести в журнал")
@@ -313,8 +336,8 @@
         localStorage.removeItem(DRAFT_KEY);
     }
 
-    function step(p, n, d) { if (APP_PAUSED) return alert(PAUSE_MSG); state[p + n] = Math.max(0, (state[p + n] || 0) + d); sync(p, n); saveDraft(); }
-    function inputVal(p, n, v) { if (APP_PAUSED) { sync(p, n); return; } state[p + n] = Math.max(0, parseInt(v) || 0); sync(p, n); saveDraft(); }
+    function step(p, n, d) { if (APP_PAUSED && !unlocked) return alert(PAUSE_MSG); state[p + n] = Math.max(0, (state[p + n] || 0) + d); sync(p, n); saveDraft(); }
+    function inputVal(p, n, v) { if (APP_PAUSED && !unlocked) { sync(p, n); return; } state[p + n] = Math.max(0, parseInt(v) || 0); sync(p, n); saveDraft(); }
     function sync(p, n) {
         const item = (p === 'r' ? RATS : MICE).find(i => i.n === n);
         document.getElementById(`in-${p}${n}`).value = state[p+n];
@@ -344,7 +367,7 @@
     }
 
     function saveToLog() {
-        if (APP_PAUSED) return alert(PAUSE_MSG);
+        if (APP_PAUSED && !unlocked) return alert(PAUSE_MSG);
         const sF = document.getElementById('s_fio').value, rF = document.getElementById('r_fio').value;
         if (!sF || !rF) return alert("Заполните ФИО!");
         const rD = RATS.filter(i => state['r'+i.n]>0).map(i => ({ t: `Крыса №${i.n} ${i.t}`, q: state['r'+i.n], w: (state['r'+i.n]*i.w/1000).toFixed(3) }));
@@ -370,7 +393,7 @@
     }
 
     function generateHTML(id) {
-        if (APP_PAUSED) return alert(PAUSE_MSG);
+        if (APP_PAUSED && !unlocked) return alert(PAUSE_MSG);
         const e = JSON.parse(localStorage.getItem(DB_KEY)).find(x => x.id === id), fname = getNowFilename();
         let h = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${fname}</title><style>body{font-family:serif;padding:30px;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #000;padding:8px;text-align:left;}h2,h3{text-align:center;}@media print{.no-p{display:none;}}</style></head><body><button class="no-p" onclick="window.print()">ПЕЧАТЬ</button><h2>Лист учёта выдачи живых кормов</h2><p><b>Дата:</b> ${e.date}<br><b>Выдал:</b> ${e.s_i}<br><b>Принял:</b> ${e.r_i}</p>`;
         if(e.rats.length) h += `<h3>КРЫСЫ</h3><table><tr><th>Тип</th><th>Кол-во</th><th>Вес (кг)</th></tr>${e.rats.map(i=>`<tr><td>${i.t}</td><td>${i.q}</td><td>${i.w}</td></tr>`).join('')}<tr><td><b>ИТОГО</b></td><td><b>${e.tQr}</b></td><td><b>${e.tWr}</b></td></tr></table>`;
@@ -380,7 +403,7 @@
     }
 
     function generateTXT(id) {
-        if (APP_PAUSED) return alert(PAUSE_MSG);
+        if (APP_PAUSED && !unlocked) return alert(PAUSE_MSG);
         const e = JSON.parse(localStorage.getItem(DB_KEY)).find(x => x.id === id), fname = getNowFilename();
         let t = `ОТЧЕТ ВЫДАЧИ КО\nДата: ${e.date}\nВыдал: ${e.s_i}\nПринял: ${e.r_i}\n\n`;
         if(e.rats.length) t += `КРЫСЫ:\n` + e.rats.map(i=>`${i.t}: ${i.q} шт`).join('\n') + `\nВсего крыс: ${e.tQr} шт / ${e.tWr} кг\n\n`;
@@ -388,10 +411,10 @@
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t],{type:'text/plain'})); a.download = fname+'.txt'; a.click();
     }
 
-    function deleteEntry(id) { if (APP_PAUSED) return alert(PAUSE_MSG); if(confirm("Удалить запись?")) { let log = JSON.parse(localStorage.getItem(DB_KEY)); localStorage.setItem(DB_KEY, JSON.stringify(log.filter(x => x.id !== id))); updateJournalUI(); } }
-    function exportJson() { if (APP_PAUSED) return alert(PAUSE_MSG); const d = localStorage.getItem(DB_KEY); if(!d) return alert("База пуста"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download = `backup_${Date.now()}.json`; a.click(); }
+    function deleteEntry(id) { if (APP_PAUSED && !unlocked) return alert(PAUSE_MSG); if(confirm("Удалить запись?")) { let log = JSON.parse(localStorage.getItem(DB_KEY)); localStorage.setItem(DB_KEY, JSON.stringify(log.filter(x => x.id !== id))); updateJournalUI(); } }
+    function exportJson() { if (APP_PAUSED && !unlocked) return alert(PAUSE_MSG); const d = localStorage.getItem(DB_KEY); if(!d) return alert("База пуста"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download = `backup_${Date.now()}.json`; a.click(); }
     function importJson(input) {
-        if (APP_PAUSED) { alert(PAUSE_MSG); input.value = ''; return; }
+        if (APP_PAUSED && !unlocked) { alert(PAUSE_MSG); input.value = ''; return; }
         const file = input.files[0];
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -416,7 +439,7 @@
         };
         reader.readAsText(file);
     }
-    function clearLog() { if (APP_PAUSED) return alert(PAUSE_MSG); if(confirm("УДАЛИТЬ ВСЕ ЗАПИСИ?") && prompt("Введите УДАЛИТЬ") === "УДАЛИТЬ") { localStorage.removeItem(DB_KEY); updateJournalUI(); } }
+    function clearLog() { if (APP_PAUSED && !unlocked) return alert(PAUSE_MSG); if(confirm("УДАЛИТЬ ВСЕ ЗАПИСИ?") && prompt("Введите УДАЛИТЬ") === "УДАЛИТЬ") { localStorage.removeItem(DB_KEY); updateJournalUI(); } }
 
     init();
 
