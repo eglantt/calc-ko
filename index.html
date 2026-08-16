@@ -160,7 +160,7 @@
     <div class="sticky-header">
         <div class="app-header">
             <h1>Калькулятор кормовых объектов</h1>
-            <span id="v-tap" onclick="onVersionTap()">v 1.2.3</span>
+            <span id="v-tap" style="padding:14px 16px; margin:-14px -16px; display:inline-block;">v 1.2.3</span>
         </div>
         <div id="pause-banner" style="display:none; background:#c0392b; color:#fff; text-align:center; font-weight:bold; padding:10px 14px; font-size:14px;">
             ⚠ ПРИЛОЖЕНИЕ ВРЕМЕННО ПРИОСТАНОВЛЕНО<br>
@@ -243,6 +243,9 @@
             document.getElementById('pause-banner').style.display = 'none';
         }
     }
+    // pointerdown вместо click: срабатывает в момент касания, не отменяется лёгким
+    // смещением пальца между touchstart/touchend — надёжнее для быстрого частого тапа
+    document.getElementById('v-tap').addEventListener('pointerdown', onVersionTap);
 
     const DB_KEY = 'zoo_feed_calc_db_v1';
     const DRAFT_KEY = 'zoo_feed_calc_draft_v1'; // черновик несохранённых count'ов (до нажатия "Внести в журнал")

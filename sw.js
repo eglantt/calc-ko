@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zoo-calc-paused-2'; // добавлен жест разблокировки (21 тап по версии), было zoo-calc-paused
+const CACHE_NAME = 'zoo-calc-paused-3'; // фикс тач-мишени и pointerdown вместо click, было zoo-calc-paused-2
 const ASSETS = [
   'index.html',
   'manifest.json',
