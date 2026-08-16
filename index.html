@@ -140,6 +140,18 @@
         .admin-btn { padding: 15px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 8px; color: white; }
         .btn-blue { background: #34495e; }
         .btn-red { background: var(--danger); }
+        /* Режим паузы: визуально гасим и блокируем всё, кроме вкладок-табов */
+        body.app-paused .btn-math,
+        body.app-paused .btn-quick,
+        body.app-paused .num-input,
+        body.app-paused .grid-input,
+        body.app-paused .admin-btn,
+        body.app-paused .btn-save,
+        body.app-paused .action-btn {
+            pointer-events: none;
+            opacity: 0.45;
+            filter: grayscale(0.5);
+        }
     </style>
 </head>
 <body>
@@ -149,6 +161,10 @@
         <div class="app-header">
             <h1>Калькулятор кормовых объектов</h1>
             <span>v 1.2.3</span>
+        </div>
+        <div id="pause-banner" style="display:none; background:#c0392b; color:#fff; text-align:center; font-weight:bold; padding:10px 14px; font-size:14px;">
+            ⚠ ПРИЛОЖЕНИЕ ВРЕМЕННО ПРИОСТАНОВЛЕНО<br>
+            <span style="font-weight:normal; font-size:12px;">Внесение и изменение данных недоступно. Журнал доступен только для просмотра.</span>
         </div>
         <div class="tabs">
             <button id="tab-rats" class="tab-btn active" onclick="setTab('rats')">КРЫСЫ</button>
@@ -199,6 +215,12 @@
 </div>
 
 <script>
+    // === РЕЖИМ ПАУЗЫ ===
+    // true = приложение приостановлено: ввод/сохранение/удаление/импорт/экспорт заблокированы,
+    // журнал доступен только для просмотра. Данные в localStorage не затрагиваются.
+    const APP_PAUSED = true;
+    const PAUSE_MSG = "Приложение временно приостановлено. Внесение и изменение данных недоступно.";
+
     const DB_KEY = 'zoo_feed_calc_db_v1';
     const DRAFT_KEY = 'zoo_feed_calc_draft_v1'; // черновик несохранённых count'ов (до нажатия "Внести в журнал")
     // ВОЗВРАЩЕН СПИСОК КЛЮЧЕЙ ДЛЯ ВОССТАНОВЛЕНИЯ БАЗЫ
@@ -260,6 +282,11 @@
         RATS.forEach(i => sync('r', i.n));
         MICE.forEach(i => sync('m', i.n));
 
+        if (APP_PAUSED) {
+            document.body.classList.add('app-paused');
+            document.getElementById('pause-banner').style.display = 'block';
+        }
+
         updateTotals(); updateJournalUI();
     }
 
@@ -286,8 +313,8 @@
         localStorage.removeItem(DRAFT_KEY);
     }
 
-    function step(p, n, d) { state[p + n] = Math.max(0, (state[p + n] || 0) + d); sync(p, n); saveDraft(); }
-    function inputVal(p, n, v) { state[p + n] = Math.max(0, parseInt(v) || 0); sync(p, n); saveDraft(); }
+    function step(p, n, d) { if (APP_PAUSED) return alert(PAUSE_MSG); state[p + n] = Math.max(0, (state[p + n] || 0) + d); sync(p, n); saveDraft(); }
+    function inputVal(p, n, v) { if (APP_PAUSED) { sync(p, n); return; } state[p + n] = Math.max(0, parseInt(v) || 0); sync(p, n); saveDraft(); }
     function sync(p, n) {
         const item = (p === 'r' ? RATS : MICE).find(i => i.n === n);
         document.getElementById(`in-${p}${n}`).value = state[p+n];
@@ -317,6 +344,7 @@
     }
 
     function saveToLog() {
+        if (APP_PAUSED) return alert(PAUSE_MSG);
         const sF = document.getElementById('s_fio').value, rF = document.getElementById('r_fio').value;
         if (!sF || !rF) return alert("Заполните ФИО!");
         const rD = RATS.filter(i => state['r'+i.n]>0).map(i => ({ t: `Крыса №${i.n} ${i.t}`, q: state['r'+i.n], w: (state['r'+i.n]*i.w/1000).toFixed(3) }));
@@ -342,6 +370,7 @@
     }
 
     function generateHTML(id) {
+        if (APP_PAUSED) return alert(PAUSE_MSG);
         const e = JSON.parse(localStorage.getItem(DB_KEY)).find(x => x.id === id), fname = getNowFilename();
         let h = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${fname}</title><style>body{font-family:serif;padding:30px;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #000;padding:8px;text-align:left;}h2,h3{text-align:center;}@media print{.no-p{display:none;}}</style></head><body><button class="no-p" onclick="window.print()">ПЕЧАТЬ</button><h2>Лист учёта выдачи живых кормов</h2><p><b>Дата:</b> ${e.date}<br><b>Выдал:</b> ${e.s_i}<br><b>Принял:</b> ${e.r_i}</p>`;
         if(e.rats.length) h += `<h3>КРЫСЫ</h3><table><tr><th>Тип</th><th>Кол-во</th><th>Вес (кг)</th></tr>${e.rats.map(i=>`<tr><td>${i.t}</td><td>${i.q}</td><td>${i.w}</td></tr>`).join('')}<tr><td><b>ИТОГО</b></td><td><b>${e.tQr}</b></td><td><b>${e.tWr}</b></td></tr></table>`;
@@ -351,6 +380,7 @@
     }
 
     function generateTXT(id) {
+        if (APP_PAUSED) return alert(PAUSE_MSG);
         const e = JSON.parse(localStorage.getItem(DB_KEY)).find(x => x.id === id), fname = getNowFilename();
         let t = `ОТЧЕТ ВЫДАЧИ КО\nДата: ${e.date}\nВыдал: ${e.s_i}\nПринял: ${e.r_i}\n\n`;
         if(e.rats.length) t += `КРЫСЫ:\n` + e.rats.map(i=>`${i.t}: ${i.q} шт`).join('\n') + `\nВсего крыс: ${e.tQr} шт / ${e.tWr} кг\n\n`;
@@ -358,9 +388,10 @@
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t],{type:'text/plain'})); a.download = fname+'.txt'; a.click();
     }
 
-    function deleteEntry(id) { if(confirm("Удалить запись?")) { let log = JSON.parse(localStorage.getItem(DB_KEY)); localStorage.setItem(DB_KEY, JSON.stringify(log.filter(x => x.id !== id))); updateJournalUI(); } }
-    function exportJson() { const d = localStorage.getItem(DB_KEY); if(!d) return alert("База пуста"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download = `backup_${Date.now()}.json`; a.click(); }
+    function deleteEntry(id) { if (APP_PAUSED) return alert(PAUSE_MSG); if(confirm("Удалить запись?")) { let log = JSON.parse(localStorage.getItem(DB_KEY)); localStorage.setItem(DB_KEY, JSON.stringify(log.filter(x => x.id !== id))); updateJournalUI(); } }
+    function exportJson() { if (APP_PAUSED) return alert(PAUSE_MSG); const d = localStorage.getItem(DB_KEY); if(!d) return alert("База пуста"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d],{type:'application/json'})); a.download = `backup_${Date.now()}.json`; a.click(); }
     function importJson(input) {
+        if (APP_PAUSED) { alert(PAUSE_MSG); input.value = ''; return; }
         const file = input.files[0];
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -385,7 +416,7 @@
         };
         reader.readAsText(file);
     }
-    function clearLog() { if(confirm("УДАЛИТЬ ВСЕ ЗАПИСИ?") && prompt("Введите УДАЛИТЬ") === "УДАЛИТЬ") { localStorage.removeItem(DB_KEY); updateJournalUI(); } }
+    function clearLog() { if (APP_PAUSED) return alert(PAUSE_MSG); if(confirm("УДАЛИТЬ ВСЕ ЗАПИСИ?") && prompt("Введите УДАЛИТЬ") === "УДАЛИТЬ") { localStorage.removeItem(DB_KEY); updateJournalUI(); } }
 
     init();
 
