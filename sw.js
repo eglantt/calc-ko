@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zoo-calc-paused-3'; // фикс тач-мишени и pointerdown вместо click, было zoo-calc-paused-2
+const CACHE_NAME = 'zoo-calc-v3'; // v1.2.3
 const ASSETS = [
   'index.html',
   'manifest.json',
