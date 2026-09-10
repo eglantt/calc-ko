@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Калькулятор кормовых объектов v 1.2.3</title>
+    <title>Калькулятор кормовых объектов v 1.2.4</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c3e50">
     <style>
@@ -148,7 +148,7 @@
     <div class="sticky-header">
         <div class="app-header">
             <h1>Калькулятор кормовых объектов</h1>
-            <span>v 1.2.3</span>
+            <span>v 1.2.4</span>
         </div>
         <div class="tabs">
             <button id="tab-rats" class="tab-btn active" onclick="setTab('rats')">КРЫСЫ</button>
@@ -247,7 +247,7 @@
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 card.innerHTML = `<div class="item-header"><span class="item-weight-calc" id="wc-${prefix}${i.n}">≈ 0 гр</span><span class="item-name">№${i.n} ${i.t}</span><span class="item-sub-info">≈ ${i.w}г | ${i.l} см</span></div>
-                    <div class="controls"><button class="btn-math" onclick="step('${prefix}',${i.n},-1)">-</button><input type="number" class="num-input" id="in-${prefix}${i.n}" value="0" oninput="inputVal('${prefix}',${i.n},this.value)"><button class="btn-math" onclick="step('${prefix}',${i.n},1)">+</button></div>
+                    <div class="controls"><button class="btn-math" onclick="step('${prefix}',${i.n},-1)">-</button><input type="number" inputmode="numeric" min="0" class="num-input" id="in-${prefix}${i.n}" value="0" oninput="inputVal('${prefix}',${i.n},this.value)"><button class="btn-math" onclick="step('${prefix}',${i.n},1)">+</button></div>
                     <div class="quick-adds"><button class="btn-quick" onclick="step('${prefix}',${i.n},-10)">-10</button><button class="btn-quick" onclick="step('${prefix}',${i.n},10)">+10</button></div>`;
                 container.appendChild(card);
             });
@@ -318,11 +318,13 @@
 
     function saveToLog() {
         const sF = document.getElementById('s_fio').value, rF = document.getElementById('r_fio').value;
+        const sP = document.getElementById('s_pos').value, rP = document.getElementById('r_pos').value;
         if (!sF || !rF) return alert("Заполните ФИО!");
+        if (!sP || !rP) return alert("Выберите должность (Выдал/Принял)!");
         const rD = RATS.filter(i => state['r'+i.n]>0).map(i => ({ t: `Крыса №${i.n} ${i.t}`, q: state['r'+i.n], w: (state['r'+i.n]*i.w/1000).toFixed(3) }));
         const mD = MICE.filter(i => state['m'+i.n]>0).map(i => ({ t: `Мышь №${i.n} ${i.t}`, q: state['m'+i.n], w: (state['m'+i.n]*i.w/1000).toFixed(3) }));
         if (!rD.length && !mD.length) return alert("Пусто!");
-        const e = { id: Date.now(), date: new Date().toLocaleString('ru-RU'), s_i: `${sF}, ${document.getElementById('s_pos').value}`, r_i: `${rF}, ${document.getElementById('r_pos').value}`, rats: rD, mice: mD, tQr: rD.reduce((a,b)=>a+b.q,0), tWr: rD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2), tQm: mD.reduce((a,b)=>a+b.q,0), tWm: mD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2) };
+        const e = { id: Date.now(), date: new Date().toLocaleString('ru-RU'), s_i: `${sF}, ${sP}`, r_i: `${rF}, ${rP}`, rats: rD, mice: mD, tQr: rD.reduce((a,b)=>a+b.q,0), tWr: rD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2), tQm: mD.reduce((a,b)=>a+b.q,0), tWm: mD.reduce((a,b)=>a+parseFloat(b.w),0).toFixed(2) };
         let log = JSON.parse(localStorage.getItem(DB_KEY) || '[]'); log.unshift(e); localStorage.setItem(DB_KEY, JSON.stringify(log));
         [...RATS, ...MICE].forEach((i, idx) => { const p = idx < RATS.length ? 'r' : 'm'; state[p+i.n] = 0; sync(p, i.n); });
         clearDraft();

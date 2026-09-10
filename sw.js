@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zoo-calc-v3'; // v1.2.3
+const CACHE_NAME = 'zoo-calc-v4'; // v1.2.4
 const ASSETS = [
   'index.html',
   'manifest.json',
